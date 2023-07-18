@@ -7,6 +7,7 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable, map, tap } from 'rxjs';
 import { AUTH_SERVICE } from '../constants/services';
+import { UserDto } from '../dto';
 
 // this AuthGuard will be in front of any of our public facing API routes. It expects to be passed Jwt cookie
 @Injectable()
@@ -20,7 +21,7 @@ export class JwtAuthGuard implements CanActivate {
       return false;
     }
     return this.authClient
-      .send('authenticate', {
+      .send<UserDto>('authenticate', {
         Authentication: jwt,
       })
       .pipe(
