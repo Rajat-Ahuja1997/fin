@@ -9,7 +9,7 @@ COPY tsconfig.json tsconfig.json
 RUN npm install -g pnpm
 
 RUN pnpm install
-# only copy over the apps/reservations directory and the libs/common
+
 COPY apps/reservations apps/reservations
 COPY libs libs
 
