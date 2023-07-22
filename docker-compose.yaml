@@ -23,6 +23,26 @@ services:
       - '3001:3001'
     volumes:
       - .:/usr/src/app
+  payments: # <--- No exposed ports because ports only exposed over TCP
+    build:
+      context: .
+      dockerfile: ./apps/payments/Dockerfile
+      target: development
+    command: pnpm run start:dev payments
+    env_file:
+      - ./apps/payments/.env
+    volumes:
+      - .:/usr/src/app
+  notifications:
+    build:
+      context: .
+      dockerfile: ./apps/notifications/Dockerfile
+      target: development
+    command: pnpm run start:dev notifications
+    env_file:
+      - ./apps/notifications/.env
+    volumes:
+      - .:/usr/src/app
   mongo: # <--- pull down official mongo image to run container for our app
     image: mongo  
     

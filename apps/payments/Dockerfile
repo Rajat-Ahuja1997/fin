@@ -4,13 +4,13 @@ WORKDIR /usr/src/app
 
 COPY package.json ./
 COPY pnpm-lock.yaml ./
-COPY tsconfig.json tsconfig.json 
+COPY tsconfig.json tsconfig.json
 
 RUN npm install -g pnpm
 
 RUN pnpm install
-# only copy over the apps/reservations directory and the libs/common
-COPY apps/reservations apps/reservations
+
+COPY apps/payments apps/payments
 COPY libs libs
 
 RUN pnpm run build
@@ -31,4 +31,4 @@ RUN pnpm install --prod
 
 COPY --from=development /usr/src/app/dist ./dist
 
-CMD ["node", "dist/apps/reservations/main"]
+CMD ["node", "dist/apps/payments /main"]
