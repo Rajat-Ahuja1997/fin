@@ -13,6 +13,8 @@ RUN pnpm install
 COPY apps/auth apps/auth
 COPY libs libs
 
+RUN cd apps/notifications && pnpm install
+
 RUN pnpm run build
 
 FROM node:alpine As production
