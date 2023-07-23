@@ -6,7 +6,7 @@ import {
 import * as bcrypt from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersRepository } from './users.repository';
-import { UserDocument } from './entities/user.schema';
+import { UserDocument } from '@app/common';
 import { GetUserDto } from './dto/get-user.dto';
 
 @Injectable()
