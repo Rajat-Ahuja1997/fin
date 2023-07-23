@@ -43,6 +43,9 @@ services:
       - ./apps/notifications/.env
     volumes:
       - .:/usr/src/app
-  mongo: # <--- pull down official mongo image to run container for our app
-    image: mongo  
-    
+  mysql:
+    image: mysql:8.0
+    env_file:
+      - .env
+    ports: 
+      - '3306:3306'
