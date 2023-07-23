@@ -3,7 +3,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker' # pre-build container that allows us to build, tag, and push docker images in Gcloud build
     args: [
       'build',
-      '-t', # tag
+      '-t', # tag image
       'us-east4-docker.pkg.dev/tactical-port-393620/reservations/production', # URL to repository
       '-f', 
       'apps/reservations/Dockerfile', # path to Dockerfile
@@ -16,7 +16,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker' # pre-build container that allows us to build, tag, and push docker images in Gcloud build
     args: [
       'build',
-      '-t', # tag
+      '-t', # tag image
       'us-east4-docker.pkg.dev/tactical-port-393620/auth/production', # URL to repository
       '-f', 
       'apps/auth/Dockerfile', # path to Dockerfile
@@ -29,7 +29,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker' # pre-build container that allows us to build, tag, and push docker images in Gcloud build
     args: [
       'build',
-      '-t', # tag
+      '-t', # tag image
       'us-east4-docker.pkg.dev/tactical-port-393620/payments/production', # URL to repository
       '-f', 
       'apps/payments/Dockerfile', # path to Dockerfile
@@ -42,7 +42,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker' # pre-build container that allows us to build, tag, and push docker images in Gcloud build
     args: [
       'build',
-      '-t', # tag
+      '-t', # tag image
       'us-east4-docker.pkg.dev/tactical-port-393620/notifications/production', # URL to repository
       '-f', 
       'apps/notifications/Dockerfile', # path to Dockerfile
