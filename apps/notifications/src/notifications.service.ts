@@ -15,7 +15,7 @@ export class NotificationsService {
       clientSecret: this.configService.get('GOOGLE_OAUTH_CLIENT_SECRET'),
       refreshToken: this.configService.get('GOOGLE_OAUTH_REFRESH_TOKEN'),
     },
-  }); // we provide the options object to configure an SMPT server
+  }); // we provide the options object to configure an SMTP server
   async notifyEmail({ email, text }: NotifyEmailDto) {
     await this.transporter.sendMail({
       from: this.configService.get('SMTP_USER'),
