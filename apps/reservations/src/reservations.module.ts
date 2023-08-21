@@ -30,7 +30,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         useFactory: (configService: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
-            urls: [configService.getOrThrow<string>('RABBITMQ_UR')],
+            urls: [configService.getOrThrow<string>('RABBITMQ_URI')],
             queue: 'auth',
           },
         }),

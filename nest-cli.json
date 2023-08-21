@@ -47,6 +47,33 @@
       "compilerOptions": {
         "tsConfigPath": "apps/notifications/tsconfig.app.json"
       }
+    },
+    "bids": {
+      "type": "application",
+      "root": "apps/bids",
+      "entryFile": "main",
+      "sourceRoot": "apps/bids/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/bids/tsconfig.app.json"
+      }
+    },
+    "lots": {
+      "type": "application",
+      "root": "apps/lots",
+      "entryFile": "main",
+      "sourceRoot": "apps/lots/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/lots/tsconfig.app.json"
+      }
+    },
+    "kafka": {
+      "type": "application",
+      "root": "apps/kafka",
+      "entryFile": "main",
+      "sourceRoot": "apps/kafka/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/kafka/tsconfig.app.json"
+      }
     }
   },
   "compilerOptions": {

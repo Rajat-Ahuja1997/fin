@@ -3,15 +3,21 @@ import {
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { Role, User } from '@app/common';
+import { Role, User, UserOutbidEvent } from '@app/common';
 import * as bcrypt from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user.dto';
 import { GetUserDto } from './dto/get-user.dto';
 import { UsersRepository } from './users.repository';
+import { KafkaService } from '@app/common/kafka';
+import { In } from 'typeorm';
+import { UserOutbidEnrichedEvent } from '@app/common';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private readonly kafkaService: KafkaService,
+  ) {}
   async create(createUserDto: CreateUserDto) {
     await this.validateCreateUser(createUserDto);
     const user = new User({
@@ -42,5 +48,16 @@ export class UsersService {
       return;
     }
     throw new UnprocessableEntityException('Email already exists');
+  }
+
+  async handleUsersOutbid(data: UserOutbidEvent) {
+    // we want to get emails for all of the outbid users
+    const ids = data.previousBidders;
+    const users: User[] = await this.usersRepository.find({
+      id: In(ids),
+    });
+
+    // send kafka event to notifications service with emails
+    this.kafkaService.emit('notify_outbid', new UserOutbidEnrichedEvent(users));
   }
 }

@@ -1,16 +1,17 @@
 services:
-  reservations:
-    build:
-      context: .
-      dockerfile: ./apps/reservations/Dockerfile
-      target: development
-    command: pnpm run start:dev reservations
-    env_file:
-      - ./apps/reservations/.env
-    ports:
-      - '3000:3000'
-    volumes:
-      - .:/usr/src/app
+  # reservations:
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/reservations/Dockerfile
+  #     target: development
+  #   command: pnpm run start:dev reservations
+  #   env_file:
+  #     - ./apps/reservations/.env
+  #   ports:
+  #     - '3000:3000'
+  #   volumes:
+  #     - .:/usr/src/app
+
   auth:
     build:
       context: .
@@ -23,16 +24,18 @@ services:
       - '3001:3001'
     volumes:
       - .:/usr/src/app
-  payments: # <--- No exposed ports because ports only exposed over TCP
-    build:
-      context: .
-      dockerfile: ./apps/payments/Dockerfile
-      target: development
-    command: pnpm run start:dev payments
-    env_file:
-      - ./apps/payments/.env
-    volumes:
-      - .:/usr/src/app
+
+  # payments: # <--- No exposed ports because ports only exposed over TCP
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/payments/Dockerfile
+  #     target: development
+  #   command: pnpm run start:dev payments
+  #   env_file:
+  #     - ./apps/payments/.env
+  #   volumes:
+  #     - .:/usr/src/app
+
   notifications:
     build:
       context: .
@@ -43,13 +46,67 @@ services:
       - ./apps/notifications/.env
     volumes:
       - .:/usr/src/app
+
+  bids:
+    build:
+      context: .
+      dockerfile: ./apps/bids/Dockerfile
+      target: development
+    command: pnpm run start:dev bids
+    env_file:
+      - ./apps/bids/.env
+    ports:
+      - '3002:3002'
+    volumes:
+      - .:/usr/src/app
+
+  lots:
+    build:
+      context: .
+      dockerfile: ./apps/lots/Dockerfile
+      target: development
+    command: pnpm run start:dev lots
+    env_file:
+      - ./apps/lots/.env
+    volumes:
+      - .:/usr/src/app
+
   mysql:
     image: mysql:8.0
     env_file:
       - .env
     ports: 
       - '3306:3306'
-  rabbitmq:
-    image: rabbitmq
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - '5672:5672'
+      - 22181:2181
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  kafka_ui:
+    image: provectuslabs/kafka-ui:latest
+    depends_on:
+      - kafka
+    ports:
+      - 8080:8080
+    environment:
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092

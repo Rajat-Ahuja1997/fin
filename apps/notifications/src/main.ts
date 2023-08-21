@@ -1,17 +1,19 @@
 import { NestFactory } from '@nestjs/core';
-import { ConfigService } from '@nestjs/config';
 import { Transport } from '@nestjs/microservices';
 import { Logger } from 'nestjs-pino';
 import { NotificationsModule } from './notifications.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(NotificationsModule);
-  const configService = app.get(ConfigService);
   app.connectMicroservice({
-    transport: Transport.RMQ,
+    transport: Transport.KAFKA,
     options: {
-      urls: [configService.getOrThrow('RABBITMQ_URI')], // RabbitMQ connection string
-      queue: 'notifications',
+      client: {
+        brokers: ['kafka:9092'],
+      },
+      consumer: {
+        groupId: 'notifications-consumer',
+      },
     },
   });
 

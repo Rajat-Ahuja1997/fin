@@ -1,36 +1,26 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { PaymentsController } from './payments.controller';
 import { PaymentsService } from './payments.service';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { NOTIFICATIONS_SERVICE, LoggerModule } from '@app/common';
+import { LoggerModule } from '@app/common';
+import { KafkaModule } from '@app/common/kafka';
+import { KafkaConfig } from '@app/common/kafka';
 
+const kafkaConfig: KafkaConfig = {
+  clientId: 'payments',
+  brokers: ['kafka:9092'],
+};
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        PORT: Joi.number().required(),
         STRIPE_SECRET_KEY: Joi.string().required(),
-        NOTIFICATIONS_HOST: Joi.string().required(),
-        NOTIFICATIONS_PORT: Joi.number().required(),
       }),
     }),
     LoggerModule,
-    ClientsModule.registerAsync([
-      {
-        name: NOTIFICATIONS_SERVICE,
-        useFactory: (configService: ConfigService) => ({
-          transport: Transport.RMQ,
-          options: {
-            urls: [configService.getOrThrow<string>('RABBITMQ_URI')],
-            queue: 'notifications',
-          },
-        }),
-        inject: [ConfigService],
-      },
-    ]),
+    KafkaModule.register(kafkaConfig),
   ],
   controllers: [PaymentsController],
   providers: [PaymentsService],

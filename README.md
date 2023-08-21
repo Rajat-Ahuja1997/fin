@@ -1,73 +1,37 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+In the context of an auction system, events represent significant occurrences in the system. Here are a few examples of potential events that the system could emit and handle:
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+3. **User Outbid:** This event could be emitted by the Bid Service when a higher bid is placed on an item, superseding a previous highest bid by a user. This event's payload might include the item ID, the outbid user's ID, and the new highest bid amount.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+4. **Auction Ended:** This event could be emitted by the Item Service when the auction end time for an item has been reached. The payload of this event could contain the item ID and the winning bid details.
 
-## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Each of these events could trigger various actions in different microservices. For example, when the 'New Bid Placed' event is published, the Notification Service could listen for this event and send a notification to the relevant users. Similarly, when the 'Auction Ended' event is published, the Bid Service could listen for this event and finalize the winning bid.
 
-## Installation
+BidPlaced:
 
-```bash
-$ pnpm install
-```
+Consumers:
+Notification Service: Notify the owner of the lot that a new bid has been placed. Also, notify the previous highest bidder that they've been outbid.
+Analytics Service: For tracking bidding activity.
+Payment Service: To place a hold on funds, if necessary.
+UserOutbid:
 
-## Running the app
+Consumers:
+Notification Service: Notify the user they have been outbid and need to place a higher bid if still interested.
+NotificationSent:
 
-```bash
-# development
-$ pnpm run start
+Consumers:
+Analytics Service: Track notification metrics, like delivery success rate, user engagement, etc.
+PaymentProcessed:
 
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+Consumers:
+Notification Service: Inform the buyer and seller about successful payment.
+Analytics Service: Track payment metrics.
+PaymentFailed:
+Consumers:
+Notification Service: Alert the buyer about the payment failure.
+Analytics Service: Track and analyze payment failures for potential issues.
+AuctionConcluded:
+Consumers:
+Notification Service: Notify the winner and inform others that the auction has ended.
+Payment Service: Initiate the payment process for the winning bid.
+Analytics Service

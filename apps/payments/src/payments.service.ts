@@ -1,16 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ClientProxy } from '@nestjs/microservices';
 import Stripe from 'stripe';
-import { NOTIFICATIONS_SERVICE } from '@app/common';
 import { PaymentsCreateChargeDto } from './dto/payments-create-charge.dto';
+import { KafkaService } from '@app/common/kafka';
 
 @Injectable()
 export class PaymentsService {
   constructor(
     private readonly configService: ConfigService,
-    @Inject(NOTIFICATIONS_SERVICE)
-    private readonly notificationsService: ClientProxy,
+    private readonly kafkaService: KafkaService,
   ) {}
   private readonly stripe = new Stripe(
     this.configService.get('STRIPE_SECRET_KEY'),
@@ -29,7 +27,8 @@ export class PaymentsService {
     });
 
     // send an event to the notifications service
-    this.notificationsService.emit('notify_email', {
+
+    this.kafkaService.emit('notify_email', {
       email,
       text: `Your payment of $${amount} has completed successfully.`,
     });

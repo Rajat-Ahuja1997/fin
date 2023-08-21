@@ -2,10 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { NotifyEmailDto } from './dto/notify-email.dto';
 import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
+import { NewBidEvent } from '@app/common/events/new-bid-event';
+import { KafkaService } from '@app/common/kafka';
+import { UserOutbidEnrichedEvent, UserOutbidEvent } from '@app/common';
 
 @Injectable()
 export class NotificationsService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly kafkaService: KafkaService,
+  ) {}
   private readonly transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -20,9 +26,29 @@ export class NotificationsService {
     await this.transporter.sendMail({
       from: this.configService.get('SMTP_USER'),
       to: email,
-      subject: 'Sleepr Notification',
+      subject: 'fin Notification',
       text,
     });
     console.log(email);
+  }
+
+  async handleNewBid(data: NewBidEvent) {
+    console.log('handling new bid');
+    this.kafkaService.emit(
+      'users_outbid',
+      new UserOutbidEvent(data.previousBidders),
+    );
+  }
+
+  async notifyNewBid(data: UserOutbidEnrichedEvent) {
+    console.log(data);
+    const emails = data.users.map((user) => user.email);
+    console.log(emails);
+    await this.transporter.sendMail({
+      from: this.configService.get('SMTP_USER'),
+      to: emails[0],
+      subject: 'fin Notification',
+      text: 'This is my text',
+    });
   }
 }

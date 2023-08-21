@@ -10,10 +10,15 @@ async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
   const configService = app.get(ConfigService);
   app.connectMicroservice({
-    transport: Transport.RMQ,
+    transport: Transport.KAFKA,
     options: {
-      urls: [configService.getOrThrow('RABBITMQ_URI')], // RabbitMQ connection string
-      queue: 'auth',
+      client: {
+        brokers: ['kafka:9092'],
+      },
+      consumer: {
+        // group ID is the same as the group ID in the client
+        groupId: 'auth-consumer',
+      },
     },
   });
   app.use(cookieParser()); // parse the cookie from the request

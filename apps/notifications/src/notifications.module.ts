@@ -4,13 +4,19 @@ import { NotificationsService } from './notifications.service';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { LoggerModule } from '@app/common';
+import { KafkaModule } from '@app/common/kafka';
+import { KafkaConfig } from '@app/common/kafka';
+
+const kafkaConfig: KafkaConfig = {
+  clientId: 'notifications',
+  brokers: ['kafka:9092'],
+};
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        PORT: Joi.number().required(),
         SMTP_USER: Joi.string().required(),
         GOOGLE_OAUTH_CLIENT_ID: Joi.string().required(),
         GOOGLE_OAUTH_CLIENT_SECRET: Joi.string().required(),
@@ -18,6 +24,7 @@ import { LoggerModule } from '@app/common';
       }),
     }),
     LoggerModule,
+    KafkaModule.register(kafkaConfig),
   ],
   controllers: [NotificationsController],
   providers: [NotificationsService],
