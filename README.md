@@ -1,1 +1,2 @@
-Building an auction system - just for fun
+- Building an auction system - just for fun
+- NestJS / TypeScript / PG / Docker / Kafka
